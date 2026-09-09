@@ -1,0 +1,69 @@
+-- =========================================================================
+-- POWER BI DAX MEASURES - COVID-19 RISK & PANDEMIC INTELLIGENCE
+-- =========================================================================
+-- Table Name Reference: powerbi_covid_dashboard_data
+-- Note: All Measures below should be created in a dedicated Measures table 
+-- or inside the main 'powerbi_covid_dashboard_data' table.
+-- =========================================================================
+
+-- 1. Total Patients
+Total Patients = COUNTROWS('powerbi_covid_dashboard_data')
+
+-- 2. Positive Cases
+Positive Cases = CALCULATE(
+    COUNTROWS('powerbi_covid_dashboard_data'), 
+    'powerbi_covid_dashboard_data'[COVID_Positive_Flag] = 1
+)
+
+-- 3. Negative Cases
+Negative Cases = CALCULATE(
+    COUNTROWS('powerbi_covid_dashboard_data'), 
+    'powerbi_covid_dashboard_data'[COVID_Positive_Flag] = 0
+)
+
+-- 4. Recovery Rate
+-- Calculated as: COVID-Positive patients who recovered / Total COVID-Positive cases
+Recovery Rate = DIVIDE(
+    CALCULATE(
+        COUNTROWS('powerbi_covid_dashboard_data'), 
+        'powerbi_covid_dashboard_data'[Patient_Outcome] = "Recovered"
+    ),
+    [Positive Cases],
+    0
+)
+
+-- 5. Critical Outcome Rate (Mortality Rate)
+-- Calculated as: COVID-Positive patients who did not survive / Total COVID-Positive cases
+-- WARNING: Based on simulated outcomes for demonstration purposes.
+Critical Outcome Rate = DIVIDE(
+    CALCULATE(
+        COUNTROWS('powerbi_covid_dashboard_data'), 
+        'powerbi_covid_dashboard_data'[Patient_Outcome] = "Deceased"
+    ),
+    [Positive Cases],
+    0
+)
+
+-- 6. High Risk Patients Count
+High Risk Patients = CALCULATE(
+    COUNTROWS('powerbi_covid_dashboard_data'), 
+    'powerbi_covid_dashboard_data'[Risk_Category] = "High Risk"
+)
+
+-- 7. Medium Risk Patients Count
+Medium Risk Patients = CALCULATE(
+    COUNTROWS('powerbi_covid_dashboard_data'), 
+    'powerbi_covid_dashboard_data'[Risk_Category] = "Medium Risk"
+)
+
+-- 8. Low Risk Patients Count
+Low Risk Patients = CALCULATE(
+    COUNTROWS('powerbi_covid_dashboard_data'), 
+    'powerbi_covid_dashboard_data'[Risk_Category] = "Low Risk"
+)
+
+-- 9. Average Oxygen Level (SpO2)
+Average Oxygen Level = AVERAGE('powerbi_covid_dashboard_data'[Oxygen_Level])
+
+-- 10. Average Temperature (°F)
+Average Temperature = AVERAGE('powerbi_covid_dashboard_data'[Body_Temperature_F])
